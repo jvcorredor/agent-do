@@ -1,19 +1,23 @@
 package repository
 
 import (
+	"bytes"
 	"testing"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 func cleanup(t *testing.T, dir string) {
 	t.Helper()
-	if err := os.Remove(dir); err != nil {
-		t.Logf("failed to clean up directory: %s", dir)
+	if err := os.RemoveAll(dir); err != nil {
+		t.Logf("failed to clean up directory %s: %v", dir, err)
 	}
 }
 
-func TestClone(t *testing.T) {
+// TestCloneCheckout walks the happy path of clone -> checkout
+func TestCloneCheckout(t *testing.T) {
 	r := New("git@github.com:usememos/memos.git")
 	dir, err := r.Clone()
 	if err != nil {
@@ -31,7 +35,21 @@ func TestClone(t *testing.T) {
 
 	sha := "797f1ff15dcb94543ce15462f7cfc8d292f2ffa7"
 	if err := r.Checkout(sha); err != nil {
-		t.Fatalf("failed to checkout commit hash: %s", sha)
+		t.Fatalf("failed to checkout commit hash %s: %v", sha, err)
+	}
+
+	command := exec.Command("git", "log", "--oneline")
+	command.Dir = dir
+	var buf bytes.Buffer
+
+	command.Stdout = &buf
+
+	if err := command.Run(); err != nil {
+		t.Fatalf("could not get git log: %v", err)
+	}
+
+	if !strings.Contains(buf.String(), sha[:7]) {
+		t.Fatalf("checkout and intended sha do not match: got %s, want %s", buf.String(), sha)
 	}
 
 	cleanup(t, dir)

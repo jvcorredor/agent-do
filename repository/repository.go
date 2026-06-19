@@ -38,13 +38,16 @@ func (r *Repository) Clone() (string, error) {
 	return tmp, nil
 }
 
+// Checkout takes a commit sha and checkout out the repo to that commit
 func (r *Repository) Checkout(sha string) error {
 	command := exec.Command("git", "fetch", "origin")
+	command.Dir = r.Dir
 	if err := command.Run(); err != nil {
 		return err
 	}
 
 	command = exec.Command("git", "checkout", sha)
+	command.Dir = r.Dir
 	if err := command.Run(); err != nil {
 		return err
 	}
