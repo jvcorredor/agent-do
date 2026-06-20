@@ -2,11 +2,11 @@ package repository
 
 import (
 	"bytes"
-	"testing"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"testing"
 )
 
 func cleanup(t *testing.T, dir string) {
@@ -54,4 +54,3 @@ func TestCloneCheckout(t *testing.T) {
 
 	cleanup(t, dir)
 }
-

@@ -7,10 +7,11 @@ import (
 
 const DefaultRepositoryPattern = "default"
 
+// Repository models the remote repo
 type Repository struct {
 	Remote string
-	Dir string
-	Sha string
+	Dir    string
+	Sha    string
 }
 
 func New(remote string) *Repository {
@@ -49,6 +50,14 @@ func (r *Repository) Checkout(sha string) error {
 	command = exec.Command("git", "checkout", sha)
 	command.Dir = r.Dir
 	if err := command.Run(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repository) Cleanup() error {
+	if err := os.RemoveAll(r.Dir); err != nil {
 		return err
 	}
 

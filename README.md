@@ -1,3 +1,3 @@
 # agent-do
 
-Agent-do spins up autonomous agents as Kubernetes jobs to perform your coding tasks.
+Agent-do is a command-line tool that accepts a repository and a commit hash, checks them out, and completes a specified task.
